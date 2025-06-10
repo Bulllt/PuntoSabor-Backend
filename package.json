@@ -1,0 +1,27 @@
+{
+  "name": "puntosabor-backend",
+  "version": "1.0.0",
+  "description": "Backend of the website Punto Sabor",
+  "keywords": [
+    "Backend",
+    "mvp",
+    "api",
+    "Punto",
+    "Sabor"
+  ],
+  "homepage": "https://github.com/Bulllt/PuntoSabor-Backend#readme",
+  "bugs": {
+    "url": "https://github.com/Bulllt/PuntoSabor-Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bulllt/PuntoSabor-Backend.git"
+  },
+  "license": "MIT",
+  "author": "bull",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll"
+  }
+}
