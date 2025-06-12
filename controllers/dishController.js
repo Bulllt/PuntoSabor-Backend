@@ -42,7 +42,7 @@ const getDish = asyncHandler(async (req, res) => {
 
 // @desc    Create new dish
 // @route   POST /api/v1/restaurants/:restaurantId/dishes
-// @access  Public
+// @access  Private
 const createDish = asyncHandler(async (req, res) => {
   const { restaurantId } = req.params;
 
@@ -56,7 +56,7 @@ const createDish = asyncHandler(async (req, res) => {
 
 // @desc    Update dish
 // @route   PUT /api/v1/restaurants/:restaurantId/dishes/:dishId
-// @access  Public
+// @access  Private
 const updateDish = asyncHandler(async (req, res) => {
   const { restaurantId, dishId } = req.params;
 
@@ -79,7 +79,7 @@ const updateDish = asyncHandler(async (req, res) => {
 
 // @desc    Delete dish
 // @route   DELETE /api/v1/restaurants/:restaurantId/dishes/:dishId
-// @access  Public
+// @access  Private
 const deleteDish = asyncHandler(async (req, res) => {
   const { restaurantId, dishId } = req.params;
 

@@ -39,7 +39,7 @@ const getRestaurant = asyncHandler(async (req, res) => {
 
 // @desc    Create new restaurant
 // @route   POST /api/v1/restaurants
-// @access  Public
+// @access  Private
 const createRestaurant = asyncHandler(async (req, res) => {
   const restaurant = await restaurantModel.create(req.body);
 
@@ -51,7 +51,7 @@ const createRestaurant = asyncHandler(async (req, res) => {
 
 // @desc    Update restaurant
 // @route   PUT /api/v1/restaurants/:id
-// @access  Public
+// @access  Private
 const updateRestaurant = asyncHandler(async (req, res) => {
   const restaurant = await restaurantModel.getById(req.params.id);
 
@@ -75,7 +75,7 @@ const updateRestaurant = asyncHandler(async (req, res) => {
 
 // @desc    Delete restaurant
 // @route   DELETE /api/v1/restaurants/:id
-// @access  Public
+// @access  Private
 const deleteRestaurant = asyncHandler(async (req, res) => {
   const restaurant = await restaurantModel.getById(req.params.id);
 

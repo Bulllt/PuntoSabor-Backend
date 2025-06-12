@@ -10,38 +10,40 @@ const {
   getAverageRating,
   getRatingDistribution,
 } = require("../controllers/reviewController");
-
 const {
   validateReview,
   validatePagination,
   validateId,
 } = require("../middlewares/validationMiddleware");
+const { authenticate, isAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router({ mergeParams: true });
 
-// Review statistics routes
 router.route("/stats/average").get(getAverageRating);
 
 router.route("/stats/distribution").get(getRatingDistribution);
 
-// Review routes by user
 router.route("/user/:userId").get(validateId("userId"), getReviewsByUser);
 
-// Review routes by rating
 router
   .route("/rating/:rating")
   .get(validateId("rating"), validatePagination, getReviewsByRating);
 
-// Main review routes
 router
   .route("/")
   .get(validatePagination, getAllReviews)
-  .post(validateReview, createReview);
+  .post(validateReview, authenticate, isAdmin, createReview);
 
 router
   .route("/:reviewId")
   .get(validateId("reviewId"), getReview)
-  .put(validateId("reviewId"), validateReview, updateReview)
-  .delete(validateId("reviewId"), deleteReview);
+  .put(
+    validateId("reviewId"),
+    authenticate,
+    isAdmin,
+    validateReview,
+    updateReview
+  )
+  .delete(validateId("reviewId"), authenticate, isAdmin, deleteReview);
 
 module.exports = router;

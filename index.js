@@ -15,7 +15,7 @@ app.use(
     origin:
       process.env.NODE_ENV === "production"
         ? ["https://your-frontend-domain.com"]
-        : ["http://localhost:3000", "http://localhost:3001"],
+        : ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -36,23 +36,17 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // API routes
-app.use(`/api/${process.env.API_VERSION || "v1"}`, routes);
-
-// Root route
+app.use(`/api/${process.env.API_VERSION}`, routes);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Welcome to Punto Sabor API",
-    version: process.env.API_VERSION || "v1",
+    version: process.env.API_VERSION,
     endpoints: {
-      health: `/api/${process.env.API_VERSION || "v1"}/health`,
-      restaurants: `/api/${process.env.API_VERSION || "v1"}/restaurants`,
-      searchByDish: `/api/${
-        process.env.API_VERSION || "v1"
-      }/restaurants/search/dish?dish=DISH_NAME`,
-      globalDishSearch: `/api/${
-        process.env.API_VERSION || "v1"
-      }/dishes/search?dish=DISH_NAME`,
+      health: `/api/${process.env.API_VERSION}/health`,
+      restaurants: `/api/${process.env.API_VERSION}/restaurants`,
+      searchByDish: `/api/${process.env.API_VERSION}/restaurants/search/dish?dish=DISH_NAME`,
+      globalDishSearch: `/api/${process.env.API_VERSION}/dishes/search?dish=DISH_NAME`,
     },
   });
 });

@@ -48,7 +48,7 @@ const getReview = asyncHandler(async (req, res) => {
 
 // @desc    Create new review
 // @route   POST /api/v1/restaurants/:restaurantId/dishes/:dishId/reviews
-// @access  Public
+// @access  Private
 const createReview = asyncHandler(async (req, res) => {
   const { restaurantId, dishId } = req.params;
 
@@ -62,7 +62,7 @@ const createReview = asyncHandler(async (req, res) => {
 
 // @desc    Update review
 // @route   PUT /api/v1/restaurants/:restaurantId/dishes/:dishId/reviews/:reviewId
-// @access  Public
+// @access  Private
 const updateReview = asyncHandler(async (req, res) => {
   const { restaurantId, dishId, reviewId } = req.params;
 
@@ -90,7 +90,7 @@ const updateReview = asyncHandler(async (req, res) => {
 
 // @desc    Delete review
 // @route   DELETE /api/v1/restaurants/:restaurantId/dishes/:dishId/reviews/:reviewId
-// @access  Public
+// @access  Private
 const deleteReview = asyncHandler(async (req, res) => {
   const { restaurantId, dishId, reviewId } = req.params;
 

@@ -9,28 +9,26 @@ const {
   searchDishesByCategory,
   globalSearchDishes,
 } = require("../controllers/dishController");
-
 const {
   validateDish,
   validateSearchQuery,
   validatePagination,
   validateId,
 } = require("../middlewares/validationMiddleware");
+const { authenticate, isAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router({ mergeParams: true });
-
-// Include other resource routers
 const reviewRouter = require("./reviewRoutes");
 router.use("/:dishId/reviews", reviewRouter);
 
-// Global dish search route (not nested under restaurants)
+// (not nested under restaurants)
 router.route("/search").get(validateSearchQuery, globalSearchDishes);
 
-// Nested dish routes (under restaurants/:restaurantId/dishes)
+// (under restaurants/:restaurantId/dishes)
 router
   .route("/")
   .get(validatePagination, getAllDishes)
-  .post(validateDish, createDish);
+  .post(validateDish, authenticate, isAdmin, createDish);
 
 router.route("/search").get(validateSearchQuery, searchDishes);
 
@@ -41,7 +39,7 @@ router
 router
   .route("/:dishId")
   .get(validateId("dishId"), getDish)
-  .put(validateId("dishId"), validateDish, updateDish)
-  .delete(validateId("dishId"), deleteDish);
+  .put(validateId("dishId"), authenticate, isAdmin, validateDish, updateDish)
+  .delete(validateId("dishId"), authenticate, isAdmin, deleteDish);
 
 module.exports = router;
