@@ -8,7 +8,7 @@ class Dish {
   // Get dish collection reference for a restaurant
   getDishCollection(restaurantId) {
     return this.db
-      .collection("restaurants")
+      .collection("localFood")
       .doc(restaurantId)
       .collection("dishes");
   }

@@ -2,7 +2,7 @@ const { db } = require("../firebase");
 
 class Restaurant {
   constructor() {
-    this.collection = db.collection("restaurants");
+    this.collection = db.collection("localFood");
   }
 
   // Create a new restaurant

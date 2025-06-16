@@ -1,37 +1,83 @@
 const validateRestaurant = (req, res, next) => {
-  const { name, address, coordinates, rating } = req.body;
+  const { data } = req.body;
   const errors = [];
 
-  if (!name || typeof name !== "string" || name.trim().length === 0) {
+  // Validate required fields
+  if (
+    !data?.name ||
+    typeof data.name !== "string" ||
+    data.name.trim().length === 0
+  ) {
     errors.push("Name is required and must be a non-empty string");
   }
 
-  if (!address || typeof address !== "string" || address.trim().length === 0) {
+  if (
+    !data?.address ||
+    typeof data.address !== "string" ||
+    data.address.trim().length === 0
+  ) {
     errors.push("Address is required and must be a non-empty string");
   }
 
-  if (!coordinates || typeof coordinates !== "object") {
-    errors.push("Coordinates are required and must be an object");
-  } else {
+  // Validate optional fields
+  if (data?.phone && typeof data.phone !== "string") {
+    errors.push("Phone must be a string or null");
+  }
+
+  if (data?.specialty && typeof data.specialty !== "string") {
+    errors.push("Specialty must be a string");
+  }
+
+  if (data?.upTime && typeof data.upTime !== "string") {
+    errors.push("UpTime must be a string");
+  }
+
+  if (data?.website && typeof data.website !== "string") {
+    errors.push("Website must be a string or null");
+  }
+
+  if (data?.priceRange) {
     if (
-      typeof coordinates.latitude !== "number" ||
-      coordinates.latitude < -90 ||
-      coordinates.latitude > 90
+      typeof data.priceRange !== "string" ||
+      !/^\d+-\d+$/.test(data.priceRange)
     ) {
-      errors.push("Latitude must be a number between -90 and 90");
-    }
-    if (
-      typeof coordinates.longitude !== "number" ||
-      coordinates.longitude < -180 ||
-      coordinates.longitude > 180
-    ) {
-      errors.push("Longitude must be a number between -180 and 180");
+      errors.push(
+        "Price range must be in format 'min-max' (e.g., '4000-13000')"
+      );
     }
   }
 
-  if (rating !== undefined) {
-    if (typeof rating !== "number" || rating < 0 || rating > 5) {
-      errors.push("Rating must be a number between 0 and 5");
+  // Validate services array
+  if (data?.services) {
+    if (!Array.isArray(data.services)) {
+      errors.push("Services must be an array");
+    } else {
+      const validServiceKeys = ["delivery", "takeOut", "booking", "parking"];
+      data.services.forEach((service, index) => {
+        const serviceKeys = Object.keys(service);
+
+        if (
+          serviceKeys.length !== 1 ||
+          !validServiceKeys.includes(serviceKeys[0])
+        ) {
+          errors.push(
+            `Service at index ${index} must contain exactly one valid key (${validServiceKeys.join(
+              ", "
+            )})`
+          );
+        } else if (typeof service[serviceKeys[0]] !== "boolean") {
+          errors.push(
+            `Service ${serviceKeys[0]} at index ${index} must be a boolean`
+          );
+        }
+      });
+    }
+  }
+
+  // Validate rating if provided
+  if (data?.rating !== undefined) {
+    if (typeof data.rating !== "number" || data.rating < 1 || data.rating > 5) {
+      errors.push("Rating must be a number between 1 and 5");
     }
   }
 
@@ -68,39 +114,6 @@ const validateDish = (req, res, next) => {
     category.trim().length === 0
   ) {
     errors.push("Category is required and must be a non-empty string");
-  }
-
-  if (errors.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation failed",
-      errors: errors,
-    });
-  }
-
-  next();
-};
-
-const validateReview = (req, res, next) => {
-  const { userId, rating, comment } = req.body;
-  const errors = [];
-
-  if (!userId || typeof userId !== "string" || userId.trim().length === 0) {
-    errors.push("UserId is required and must be a non-empty string");
-  }
-
-  if (
-    !rating ||
-    typeof rating !== "number" ||
-    rating < 1 ||
-    rating > 5 ||
-    !Number.isInteger(rating)
-  ) {
-    errors.push("Rating is required and must be an integer between 1 and 5");
-  }
-
-  if (comment && typeof comment !== "string") {
-    errors.push("Comment must be a string");
   }
 
   if (errors.length > 0) {
@@ -194,7 +207,6 @@ const validateId = (paramName) => {
 module.exports = {
   validateRestaurant,
   validateDish,
-  validateReview,
   validateSearchQuery,
   validatePagination,
   validateId,

@@ -18,8 +18,6 @@ const {
 const { authenticate, isAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router({ mergeParams: true });
-const reviewRouter = require("./reviewRoutes");
-router.use("/:dishId/reviews", reviewRouter);
 
 // (not nested under restaurants)
 router.route("/search").get(validateSearchQuery, globalSearchDishes);
