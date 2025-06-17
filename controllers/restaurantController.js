@@ -7,15 +7,38 @@ const restaurantModel = new Restaurant();
 // @route   GET /api/v1/restaurants
 // @access  Public
 const getAllRestaurants = asyncHandler(async (req, res) => {
-  const { limit, offset } = req.query;
+  const { limit, offset, specialty, priceRange, search } = req.query;
 
-  const restaurants = await restaurantModel.getAll(limit, offset);
+  let restaurants;
 
-  res.status(200).json({
-    success: true,
-    count: restaurants.length,
-    data: restaurants,
-  });
+  try {
+    if (search) {
+      // Búsqueda por término
+      restaurants = await restaurantModel.search(search);
+    } else if (specialty || priceRange) {
+      // Filtros específicos
+      restaurants = await restaurantModel.getWithFilters({
+        specialty,
+        priceRange,
+        limit,
+        offset,
+      });
+    } else {
+      // Obtener todos los restaurantes
+      restaurants = await restaurantModel.getAll(limit, offset);
+    }
+
+    res.status(200).json({
+      success: true,
+      count: restaurants.length,
+      data: restaurants,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error al obtener los restaurantes",
+    });
+  }
 });
 
 // @desc    Get single restaurant

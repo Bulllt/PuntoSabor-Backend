@@ -32,32 +32,55 @@ class Restaurant {
     }
   }
 
-  // Get all restaurants
-  async getAll(limit = 50, offset = 0) {
+  // Get all restaurants with dishes
+  async getAll(limit, offset) {
     try {
-      let query = this.collection.orderBy("name").limit(limit);
-
-      if (offset > 0) {
-        const lastDoc = await this.collection
-          .orderBy("name")
-          .limit(offset)
-          .get();
-        if (!lastDoc.empty) {
-          const lastVisible = lastDoc.docs[lastDoc.docs.length - 1];
-          query = query.startAfter(lastVisible);
-        }
+      let query = this.collection;
+      if (limit) {
+        query = query.limit(parseInt(limit));
       }
 
-      const snapshot = await query.get();
+      if (offset) {
+        query = query.offset(parseInt(offset));
+      }
+
+      const restaurantsSnapshot = await query.get();
+
+      if (restaurantsSnapshot.empty) {
+        return [];
+      }
+
       const restaurants = [];
 
-      snapshot.forEach((doc) => {
-        restaurants.push({ id: doc.id, ...doc.data() });
-      });
+      // Procesar cada restaurante
+      for (const restaurantDoc of restaurantsSnapshot.docs) {
+        const restaurantData = {
+          id: restaurantDoc.id,
+          data: restaurantDoc.data(),
+          dishes: [],
+        };
+
+        // Obtener los platillos de cada restaurante
+        const dishesSnapshot = await restaurantDoc.ref
+          .collection("dishes")
+          .get();
+
+        if (!dishesSnapshot.empty) {
+          dishesSnapshot.forEach((dishDoc) => {
+            restaurantData.dishes.push({
+              id: dishDoc.id,
+              data: dishDoc.data(),
+            });
+          });
+        }
+
+        restaurants.push(restaurantData);
+      }
 
       return restaurants;
     } catch (error) {
-      throw new Error(`Error getting restaurants: ${error.message}`);
+      console.error("Error fetching restaurants from Firebase:", error);
+      throw new Error("Error al obtener restaurantes de la base de datos");
     }
   }
 
