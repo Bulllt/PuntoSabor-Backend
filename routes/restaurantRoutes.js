@@ -17,8 +17,6 @@ const {
 const { authenticate, isAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
-const dishRouter = require("./dishRoutes");
-router.use("/:restaurantId/dishes", dishRouter);
 
 router
   .route("/")

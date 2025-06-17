@@ -1,6 +1,6 @@
 const express = require("express");
 const restaurantRoutes = require("./restaurantRoutes");
-const dishRoutes = require("./dishRoutes");
+const { dishRouter, nestedDishRouter } = require("./dishRoutes");
 const userRoutes = require("./userRoutes");
 
 const router = express.Router();
@@ -17,7 +17,8 @@ router.get("/health", (req, res) => {
 
 // Mount routes
 router.use("/restaurants", restaurantRoutes);
-router.use("/dishes", dishRoutes);
+router.use("/dishes", dishRouter);
 router.use("/users", userRoutes);
+router.use("/restaurants/:restaurantId/dishes", nestedDishRouter);
 
 module.exports = router;

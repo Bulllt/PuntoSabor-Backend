@@ -170,6 +170,48 @@ class Dish {
       throw new Error(`Error searching dishes globally: ${error.message}`);
     }
   }
+
+  async getAllDishes() {
+    try {
+      // 1. Get all restaurants from localFood collection
+      const restaurantsRef = this.db.collection("localFood");
+      const restaurantsSnapshot = await restaurantsRef.get();
+
+      if (restaurantsSnapshot.empty) {
+        return [];
+      }
+
+      const allDishes = [];
+
+      // 2. Process each restaurant to get its dishes
+      for (const restaurantDoc of restaurantsSnapshot.docs) {
+        const restaurantData = restaurantDoc.data();
+
+        // 3. Get the dishes subcollection for this restaurant
+        const dishesRef = restaurantDoc.ref.collection("dishes");
+        const dishesSnapshot = await dishesRef.get();
+
+        // 4. Process each dish and include restaurant reference
+        dishesSnapshot.forEach((dishDoc) => {
+          allDishes.push({
+            dishId: dishDoc.id,
+            ...dishDoc.data(),
+            restaurant: {
+              id: restaurantDoc.id,
+              name: restaurantData.name,
+              address: restaurantData.address,
+              // Include other relevant restaurant fields
+            },
+          });
+        });
+      }
+
+      return allDishes;
+    } catch (error) {
+      console.error("Error fetching dishes:", error);
+      throw error; // Let the controller handle the error
+    }
+  }
 }
 
 module.exports = Dish;

@@ -6,7 +6,7 @@ const dishModel = new Dish();
 // @desc    Get all dishes from a restaurant
 // @route   GET /api/v1/restaurants/:restaurantId/dishes
 // @access  Public
-const getAllDishes = asyncHandler(async (req, res) => {
+const getAllDishesByRestaurant = asyncHandler(async (req, res) => {
   const { restaurantId } = req.params;
   const { limit } = req.query;
 
@@ -146,8 +146,21 @@ const globalSearchDishes = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get all dishes
+// @route   GET /api/v1/dishes
+// @access  Public
+const getAllDishes = asyncHandler(async (req, res) => {
+  const dishes = await dishModel.getAllDishes();
+
+  res.status(200).json({
+    success: true,
+    count: dishes.length,
+    data: dishes,
+  });
+});
+
 module.exports = {
-  getAllDishes,
+  getAllDishesByRestaurant,
   getDish,
   createDish,
   updateDish,
@@ -155,4 +168,5 @@ module.exports = {
   searchDishes,
   searchDishesByCategory,
   globalSearchDishes,
+  getAllDishes,
 };

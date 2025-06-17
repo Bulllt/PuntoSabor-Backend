@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  getAllDishes,
+  getAllDishesByRestaurant,
   getDish,
   createDish,
   updateDish,
@@ -8,6 +8,7 @@ const {
   searchDishes,
   searchDishesByCategory,
   globalSearchDishes,
+  getAllDishes,
 } = require("../controllers/dishController");
 const {
   validateDish,
@@ -17,27 +18,29 @@ const {
 } = require("../middlewares/validationMiddleware");
 const { authenticate, isAdmin } = require("../middlewares/authMiddleware");
 
-const router = express.Router({ mergeParams: true });
+const dishRouter = express.Router();
+dishRouter.route("/").get(getAllDishes);
+dishRouter.route("/search").get(validateSearchQuery, globalSearchDishes);
 
-// (not nested under restaurants)
-router.route("/search").get(validateSearchQuery, globalSearchDishes);
-
-// (under restaurants/:restaurantId/dishes)
-router
+const nestedDishRouter = express.Router({ mergeParams: true });
+nestedDishRouter
   .route("/")
-  .get(validatePagination, getAllDishes)
+  .get(validatePagination, getAllDishesByRestaurant)
   .post(validateDish, authenticate, isAdmin, createDish);
 
-router.route("/search").get(validateSearchQuery, searchDishes);
+nestedDishRouter.route("/search").get(validateSearchQuery, searchDishes);
 
-router
+nestedDishRouter
   .route("/category/:category")
   .get(validateId("category"), searchDishesByCategory);
 
-router
+nestedDishRouter
   .route("/:dishId")
   .get(validateId("dishId"), getDish)
   .put(validateId("dishId"), authenticate, isAdmin, validateDish, updateDish)
   .delete(validateId("dishId"), authenticate, isAdmin, deleteDish);
 
-module.exports = router;
+module.exports = {
+  dishRouter,
+  nestedDishRouter,
+};
